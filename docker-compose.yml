@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - OTEL_SERVICE_NAME=mozi-service
+    depends_on:
+      - redis
+      - jaeger
+      - rabbitmq
+
+  redis:
+    image: "redis:alpine"
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+  worker:
+    build: .
+    # Az -u kapcsoló kényszeríti a Pythont, hogy azonnal kiírja a szöveget!
+    command: python -u worker.py
+    depends_on:
+      - rabbitmq
