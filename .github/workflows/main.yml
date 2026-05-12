@@ -1,0 +1,14 @@
+name: Mozi App CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Kod letoltese
+      uses: actions/checkout@v3
+    - name: Docker kontener epitese
+      run: docker compose build
